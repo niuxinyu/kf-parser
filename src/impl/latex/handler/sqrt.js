@@ -2,36 +2,35 @@
  * 方根函数处理器
  */
 
-define( function ( require ) {
+define(function (require) {
 
-    var mergeHandler = require( "impl/latex/handler/combination" );
+    var mergeHandler = require("impl/latex/handler/combination");
 
     // 处理函数接口
-    return function ( info, processedStack, unprocessedStack ) {
+    return function (info, processedStack, unprocessedStack) {
+        var exponent = unprocessedStack.shift();
+        var tmp = null;
+        // 被开方数
+        var radicand = null;
 
-        var exponent = unprocessedStack.shift(),
-            tmp = null,
-            // 被开方数
-            radicand = null;
-
-        if ( exponent === "[" ) {
+        if (exponent === "[") {
 
             exponent = [];
 
-            while ( tmp = unprocessedStack.shift() ) {
+            while (tmp = unprocessedStack.shift()) {
 
-                if ( tmp === "]" ) {
+                if (tmp === "]") {
                     break;
                 }
 
-                exponent.push( tmp );
+                exponent.push(tmp);
 
             }
 
-            if ( exponent.length === 0 ) {
+            if (exponent.length === 0) {
                 exponent = null;
             } else {
-                exponent = mergeHandler( exponent );
+                exponent = mergeHandler(exponent);
             }
             radicand = unprocessedStack.shift();
 
@@ -40,7 +39,7 @@ define( function ( require ) {
             exponent = null;
         }
 
-        info.operand = [ radicand, exponent ];
+        info.operand = [radicand, exponent];
 
         delete info.handler;
 
@@ -48,4 +47,4 @@ define( function ( require ) {
 
     };
 
-} );
+});

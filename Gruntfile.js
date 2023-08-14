@@ -2,6 +2,15 @@
 module.exports = function (grunt) {
 
     grunt.initConfig({
+        watch: {
+            scripts: {
+              files: ['**/*.js'],
+              tasks: ['default'],
+              options: {
+                spawn: false,
+              },
+            },
+          },
 
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
@@ -123,9 +132,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-module-dependence');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     // task list.
-    grunt.registerTask( 'default', [ 'jshint' ] );
-    grunt.registerTask( 'build', [ 'jshint', 'dependence:replace', 'concat:full', 'uglify:minimize', 'clean' ] );
+    // grunt.registerTask( 'default', [ 'jshint' ] );
+    // grunt.registerTask( 'build', [ 'jshint', 'dependence:replace', 'concat:full', 'uglify:minimize', 'clean' ] );
+    grunt.registerTask( 'default', [ 'dependence:replace', 'concat:full', 'uglify:minimize', 'clean', 'watch' ] );
 
 };

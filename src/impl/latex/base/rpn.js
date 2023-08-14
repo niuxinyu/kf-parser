@@ -1,33 +1,37 @@
-define( function ( require ) {
 
-    var Utils = require( "impl/latex/base/utils" );
+define(function (require) {
 
-    function rpn ( units ) {
+    var Utils = require("impl/latex/base/utils");
 
-        var signStack = [],
+    function rpn(units) {
 
-            currentUnit = null;
+        var signStack = [];
+
+        var currentUnit = null;
 
         // 先处理函数
-        units = processFunction( units );
+        units = processFunction(units);
 
-        while ( currentUnit = units.shift() ) {
+        while (currentUnit = units.shift()) {
 
 
-            // 移除brackets中外层包裹的combination节点
-            if ( currentUnit.name === "combination" && currentUnit.operand.length === 1 && currentUnit.operand[ 0 ].name === "brackets" ) {
-                currentUnit = currentUnit.operand[ 0 ];
+            // 移除 brackets 中外层包裹的 combination 节点
+            if (currentUnit.name === "combination" &&
+                currentUnit.operand.length === 1 &&
+                currentUnit.operand[0].name === "brackets"
+            ) {
+                currentUnit = currentUnit.operand[0];
             }
 
-            if ( Utils.isArray( currentUnit ) ) {
+            if (Utils.isArray(currentUnit)) {
 
-                signStack.push( rpn( currentUnit ) );
+                signStack.push(rpn(currentUnit));
 
                 continue;
 
             }
 
-            signStack.push( currentUnit );
+            signStack.push(currentUnit);
 
         }
 
@@ -41,20 +45,23 @@ define( function ( require ) {
      * @param units 单元组
      * @returns {Array} 处理过后的单元组
      */
-    function processFunction ( units ) {
+    function processFunction(units) {
 
         var processed = [],
             currentUnit = null;
 
-        while ( ( currentUnit = units.pop() ) !== undefined ) {
+        while ((currentUnit = units.pop()) !== undefined) {
 
-            if ( currentUnit && typeof currentUnit === "object" && ( currentUnit.sign === false || currentUnit.name === "function" )  ) {
+            if (currentUnit &&
+                typeof currentUnit === "object" &&
+                (currentUnit.sign === false || currentUnit.name === "function")
+            ) {
                 // 预先处理不可作为独立符号的函数
-                var tt = currentUnit.handler( currentUnit, [], processed.reverse() );
-                processed.unshift( tt );
+                var tt = currentUnit.handler(currentUnit, [], processed.reverse());
+                processed.unshift(tt);
                 processed.reverse();
             } else {
-                processed.push( currentUnit );
+                processed.push(currentUnit);
             }
 
         }
@@ -65,4 +72,4 @@ define( function ( require ) {
 
     return rpn;
 
-} );
+});

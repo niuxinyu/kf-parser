@@ -2,7 +2,7 @@
  * Kity Formula 公式表示法Parser接口
  */
 
-define( function ( require, exports, module ) {
+define(function (require, exports, module) {
 
     // Parser 配置列表
     var CONF = {},
@@ -10,21 +10,21 @@ define( function ( require, exports, module ) {
         // 内部简单工具类
         Utils = {
 
-            extend: function ( target, sources ) {
+            extend: function (target, sources) {
 
                 var source = null;
 
-                sources = [].slice.call( arguments, 1 );
+                sources = [].slice.call(arguments, 1);
 
-                for ( var i = 0, len = sources.length; i < len; i++ ) {
+                for (var i = 0, len = sources.length; i < len; i++) {
 
-                    source = sources[ i ];
+                    source = sources[i];
 
-                    for ( var key in source ) {
+                    for (var key in source) {
 
-                        if ( source.hasOwnProperty( key ) ) {
+                        if (source.hasOwnProperty(key)) {
 
-                            target[ key ] = source[ key ];
+                            target[key] = source[key];
 
                         }
 
@@ -34,19 +34,19 @@ define( function ( require, exports, module ) {
 
             },
 
-            setData: function ( container, key, value ) {
+            setData: function (container, key, value) {
 
-                if ( typeof key === "string" ) {
+                if (typeof key === "string") {
 
-                    container[ key ] = value;
+                    container[key] = value;
 
-                } else if ( typeof key === "object" ) {
+                } else if (typeof key === "object") {
 
-                    for ( value in key ) {
+                    for (value in key) {
 
-                        if ( key.hasOwnProperty( value ) ) {
+                        if (key.hasOwnProperty(value)) {
 
-                            container[ value ] = key[ value ];
+                            container[value] = key[value];
 
                         }
 
@@ -54,7 +54,7 @@ define( function ( require, exports, module ) {
 
                 } else {
                     // 配置项类型错误
-                    throw new Error( 'invalid option' );
+                    throw new Error('invalid option');
 
                 }
 
@@ -68,19 +68,18 @@ define( function ( require, exports, module ) {
      */
     var Parser = {
 
-        use: function ( type ) {
-
-            if ( !IMPL_POLL[ type ] ) {
-                throw new Error( 'unknown parser type' );
+        use: function (type) {
+            if (!IMPL_POLL[type]) {
+                throw new Error('unknown parser type');
             }
 
-            return this.proxy( IMPL_POLL[ type ] );
+            return this.proxy(IMPL_POLL[type]);
 
         },
 
-        config: function ( key, value ) {
+        config: function (key, value) {
 
-            Utils.setData( CONF, key, value );
+            Utils.setData(CONF, key, value);
 
             return this;
 
@@ -91,22 +90,22 @@ define( function ( require, exports, module ) {
          * @param type 解析器所属类型
          * @param parserImpl 解析器实现
          */
-        register: function ( type, parserImpl ) {
+        register: function (type, parserImpl) {
 
-            IMPL_POLL[ type.toLowerCase() ] = parserImpl;
+            IMPL_POLL[type.toLowerCase()] = parserImpl;
 
             return this;
 
         },
 
         // 提供构造器的实现的默认结构
-        implement: function ( parser ) {
+        implement: function (parser) {
 
-            var Impl = function () {},
-                constructor = parser.constructor || function () {},
+            var Impl = function () { },
+                constructor = parser.constructor || function () { },
                 result = function () {
-                    ParserInterface.call( this );
-                    constructor.call( this );
+                    ParserInterface.call(this);
+                    constructor.call(this);
                 };
 
             Impl.prototype = ParserInterface.prototype;
@@ -115,11 +114,11 @@ define( function ( require, exports, module ) {
 
             delete parser.constructor;
 
-            for ( var key in parser ) {
+            for (var key in parser) {
 
-                if ( key !== "constructor" && parser.hasOwnProperty( key ) ) {
+                if (key !== "constructor" && parser.hasOwnProperty(key)) {
 
-                    result.prototype[ key ] = parser[ key ];
+                    result.prototype[key] = parser[key];
 
                 }
 
@@ -134,9 +133,9 @@ define( function ( require, exports, module ) {
          * @private
          * @param parserImpl 需代理的parser实现
          */
-        proxy: function ( parserImpl ) {
+        proxy: function (parserImpl) {
 
-            return new ParserProxy( parserImpl );
+            return new ParserProxy(parserImpl);
 
         }
 
@@ -148,7 +147,7 @@ define( function ( require, exports, module ) {
      * @constructor
      * @param parserImpl 需代理的对象
      */
-    function ParserProxy ( ParserImpl ) {
+    function ParserProxy(ParserImpl) {
 
         this.impl = new ParserImpl();
         this.conf = {};
@@ -156,12 +155,10 @@ define( function ( require, exports, module ) {
     }
 
 
-    Utils.extend( ParserProxy.prototype, {
+    Utils.extend(ParserProxy.prototype, {
 
-        config: function ( key, value ) {
-
-            Utils.setData( this.conf, key, value );
-
+        config: function (key, value) {
+            Utils.setData(this.conf, key, value);
         },
 
         /**
@@ -169,58 +166,50 @@ define( function ( require, exports, module ) {
          * @param key 配置项名称
          * @param value 配置项值
          */
-        set: function ( key, value ) {
-
-            this.impl.set( key, value );
-
+        set: function (key, value) {
+            this.impl.set(key, value);
         },
 
-        parse: function ( data ) {
-
+        parse: function (data) {
             var result = {
-
                 config: {},
-
                 // 调用实现获取解析树
-                tree: this.impl.parse( data )
-
+                tree: this.impl.parse(data)
             };
 
-            Utils.extend( result.config, CONF, this.conf );
+            Utils.extend(result.config, CONF, this.conf);
 
             return result;
 
         },
 
-        serialization: function ( tree, options ) {
+        serialization: function (tree, options) {
 
-            return this.impl.serialization( tree, options );
+            return this.impl.serialization(tree, options);
 
         },
 
-        expand: function ( obj ) {
-
-            this.impl.expand( obj );
-
+        expand: function (obj) {
+            this.impl.expand(obj);
         }
 
-    } );
+    });
 
     /**
      * 解析器所需实现的接口
      * @constructor
      */
-    function ParserInterface () {
+    function ParserInterface() {
 
         this.conf = {};
 
     }
 
-    Utils.extend( ParserInterface.prototype, {
+    Utils.extend(ParserInterface.prototype, {
 
-        set: function ( key, value ) {
+        set: function (key, value) {
 
-            Utils.extend( this.conf, key, value );
+            Utils.extend(this.conf, key, value);
 
         },
 
@@ -231,12 +220,12 @@ define( function ( require, exports, module ) {
          */
         parse: function () {
 
-            throw new Error( "Abstract function" );
+            throw new Error("Abstract function");
 
         }
 
 
-    } );
+    });
 
     // exports
     module.exports = {
@@ -244,4 +233,4 @@ define( function ( require, exports, module ) {
         ParserInterface: ParserInterface
     };
 
-} );
+});
