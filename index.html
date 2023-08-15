@@ -94,27 +94,27 @@
 
               // console.log("parseResult", parseResult)
 
-              // 上标语法树
-              var temp = {
-                config: {},
-                tree: {
-                  name: "combination",
-                  operand: [
-                    {
-                      name: "superscript",
-                      // 这个作用不大
-                      type: 1,
-                      operand: [
-                        {
-                          name: "combination",
-                          operand: ["→"],
-                        },
-                        "20",
-                      ],
-                    },
-                  ],
-                },
-              }
+              // 分数语法树
+              // var obj = {
+              //   name: "combination",
+              //   operand: [
+              //     {
+              //       name: "fraction",
+              //       type: 2,
+              //       sign: false,
+              //       operand: [
+              //         {
+              //           name: "combination",
+              //           operand: ["1"],
+              //         },
+              //         {
+              //           name: "combination",
+              //           operand: ["2"],
+              //         },
+              //       ],
+              //     },
+              //   ],
+              // }
 
               assembly.regenerateBy(parseResult)
             }
@@ -165,10 +165,10 @@
         <!-- <textarea id="latexInput">\mathcal{A}</textarea> -->
 
         <!-- 分数 -->
-        <textarea id="latexInput">\frac{1}{2}</textarea>
+        <!-- <textarea id="latexInput">\frac{1}{2}</textarea> -->
 
         <!-- 左箭头 带数据 报错 内部没有支持 -->
-        <!-- <textarea id="latexInput">\xleftarrow[1]{1}</textarea> -->
+        <textarea id="latexInput">\xleftarrow[1]{3}</textarea>
 
         <!-- sin -->
         <!-- <textarea id="latexInput">\sin</textarea> -->

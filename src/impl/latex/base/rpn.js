@@ -1,73 +1,63 @@
-
 define(function (require) {
+  var Utils = require("impl/latex/base/utils")
 
-    var Utils = require("impl/latex/base/utils");
+  function rpn(units) {
+    var signStack = []
 
-    function rpn(units) {
+    var currentUnit = null
 
-        var signStack = [];
+    // 先处理函数
+    units = processFunction(units)
 
-        var currentUnit = null;
+    while ((currentUnit = units.shift())) {
+      // 移除 brackets 中外层包裹的 combination 节点
+      if (
+        currentUnit.name === "combination" &&
+        currentUnit.operand.length === 1 &&
+        currentUnit.operand[0].name === "brackets"
+      ) {
+        currentUnit = currentUnit.operand[0]
+      }
 
-        // 先处理函数
-        units = processFunction(units);
+      if (Utils.isArray(currentUnit)) {
+        signStack.push(rpn(currentUnit))
 
-        while (currentUnit = units.shift()) {
-            // 移除 brackets 中外层包裹的 combination 节点
-            if (currentUnit.name === "combination" &&
-                currentUnit.operand.length === 1 &&
-                currentUnit.operand[0].name === "brackets"
-            ) {
-                currentUnit = currentUnit.operand[0];
-            }
+        continue
+      }
 
-            if (Utils.isArray(currentUnit)) {
-
-                signStack.push(rpn(currentUnit));
-
-                continue;
-
-            }
-
-            signStack.push(currentUnit);
-
-        }
-
-        // 要处理brackets被附加的包裹元素
-        return signStack;
-
+      signStack.push(currentUnit)
     }
 
-    /**
-     * “latex函数”处理器
-     * @param units 单元组
-     * @returns {Array} 处理过后的单元组
-     */
-    function processFunction(units) {
+    // 要处理brackets被附加的包裹元素
+    return signStack
+  }
 
-        var processed = [];
-        var currentUnit = null;
+  /**
+   * “latex函数”处理器
+   * @param units 单元组
+   * @returns {Array} 处理过后的单元组
+   */
+  function processFunction(units) {
+    var processed = []
+    var currentUnit = null
 
-        while ((currentUnit = units.pop()) !== undefined) {
-
-            if (currentUnit &&
-                typeof currentUnit === "object" &&
-                (currentUnit.sign === false || currentUnit.name === "function")
-            ) {
-                // 预先处理不可作为独立符号的函数
-                var tt = currentUnit.handler(currentUnit, [], processed.reverse());
-                processed.unshift(tt);
-                processed.reverse();
-            } else {
-                processed.push(currentUnit);
-            }
-
-        }
-
-        return processed.reverse();
-
+    while ((currentUnit = units.pop()) !== undefined) {
+      if (
+        currentUnit &&
+        typeof currentUnit === "object" &&
+        (currentUnit.sign === false || currentUnit.name === "function")
+      ) {
+        // 预先处理不可作为独立符号的函数
+        var tt = currentUnit.handler(currentUnit, [], processed.reverse())
+        processed.unshift(tt)
+        processed.reverse()
+      } else {
+        processed.push(currentUnit)
+      }
     }
 
-    return rpn;
+    return processed.reverse()
+  }
 
-});
+  return rpn
+})

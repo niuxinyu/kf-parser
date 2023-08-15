@@ -128,6 +128,8 @@ define(function () {
       }
     }
 
+    console.log(tree.name)
+
     // 非文本表达式的处理
     constructor = getConstructor(tree.name)
 
@@ -184,18 +186,16 @@ define(function () {
    * 根据操作符获取对应的构造器
    */
   function getConstructor(name) {
-    return (
-      CONSTRUCT_MAPPING[name] ||
-      kf[
-        name
-          .replace(/^[a-z]/i, function (match) {
-            return match.toUpperCase()
-          })
-          .replace(/-([a-z])/gi, function (match, char) {
-            return char.toUpperCase()
-          }) + "Expression"
-      ]
-    )
+    const contrName =
+      name
+        .replace(/^[a-z]/i, function (match) {
+          return match.toUpperCase()
+        })
+        .replace(/-([a-z])/gi, function (match, char) {
+          return char.toUpperCase()
+        }) + "Expression"
+    console.log(kf)
+    return CONSTRUCT_MAPPING[name] || kf[contrName]
   }
 
   function deepCopy(source) {

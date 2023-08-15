@@ -2,24 +2,22 @@
  * 分数函数处理器
  */
 
-define( function () {
+define(function () {
+  // 处理函数接口
+  return function (info, processedStack, unprocessedStack) {
+    // 分子
+    var numerator = unprocessedStack.shift()
+    // 分母
+    var denominator = unprocessedStack.shift()
 
-    // 处理函数接口
-    return function ( info, processedStack, unprocessedStack ) {
+    if (numerator === undefined || denominator === undefined) {
+      throw new Error("Frac: Syntax Error")
+    }
 
-        var numerator = unprocessedStack.shift(),   // 分子
-            denominator = unprocessedStack.shift(); // 分母
+    info.operand = [numerator, denominator]
 
-        if ( numerator === undefined || denominator === undefined ) {
-            throw new Error( "Frac: Syntax Error" );
-        }
+    delete info.handler
 
-        info.operand = [ numerator, denominator ];
-
-        delete info.handler;
-
-        return info;
-
-    };
-
-} );
+    return info
+  }
+})

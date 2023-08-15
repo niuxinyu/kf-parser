@@ -3,8 +3,8 @@
  */
 
 define(function (require) {
-    return {
-        toRPNExpression: require("impl/latex/base/rpn"),
-        generateTree: require("impl/latex/base/tree")
-    };
-});
+  return {
+    toRPNExpression: require("impl/latex/base/rpn"),
+    generateTree: require("impl/latex/base/tree"),
+  }
+})

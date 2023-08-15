@@ -19,7 +19,7 @@ define(function (require) {
       type: TYPE.OP,
       handler: scriptHandler,
     },
-    // 函数
+    // 分数
     frac: {
       name: "fraction",
       type: TYPE.FN,
@@ -82,6 +82,12 @@ define(function (require) {
       handler: require("impl/latex/handler/mathrm"),
     },
     // 上下结构
-    xleftarrow: {},
+    // 类似于分数
+    xleftarrow: {
+      name: "xleftarrow",
+      type: TYPE.FN,
+      sign: false,
+      handler: require("impl/latex/handler/sqrt"),
+    },
   }
 })

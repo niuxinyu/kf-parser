@@ -35,8 +35,6 @@ define(function (require) {
 
         units = this.parseToStruct(units)
 
-        console.log("units", units)
-
         // 生成树结构
         return this.generateTree(units)
       },

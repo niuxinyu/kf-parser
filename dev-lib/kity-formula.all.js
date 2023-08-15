@@ -505,10 +505,10 @@
 
     return kity.createClass("Text", {
       base: require("signgroup"),
-      constructor: function (content, fontFamily) {
+      constructor: function (content, fontFamily, fontSize = 50) {
         this.callBase()
         this.fontFamily = fontFamily
-        this.fontSize = 50
+        this.fontSize = fontSize
         this.content = content || ""
         this.box.remove()
         this.translationContent = this.translation(this.content)
@@ -978,6 +978,39 @@
       },
       setSubscript: function (sub) {
         this.setOperand(sub, 2)
+      },
+    })
+  })
+
+  // 左箭头
+  define("expression/compound-exp/xleftarrow", [
+    "kity",
+    "operator/fraction",
+    "sysconf",
+    "operator/operator",
+    "expression/compound-exp/binary",
+    "expression/compound",
+  ], function (require, exports, modules) {
+    var kity = require("kity")
+    // TODO
+    var XleftarrowOperator = require("operator/xleftarrow")
+
+    return kity.createClass("XleftarrowExpression", {
+      base: require("expression/compound-exp/binary"),
+      constructor: function (upOperand, downOperand) {
+        this.callBase(upOperand, downOperand)
+        this.setFlag("Fraction")
+        this.setOperator(new XleftarrowOperator())
+      },
+      getBaseline: function (refer) {
+        var downOperand = this.getOperand(1),
+          rectBox = downOperand.getRenderBox(refer)
+        return rectBox.y + downOperand.getBaselineProportion() * rectBox.height
+      },
+      getMeanline: function (refer) {
+        var upOperand = this.getOperand(0),
+          rectBox = upOperand.getRenderBox(refer)
+        return upOperand.getMeanlineProportion() * rectBox.height
       },
     })
   })
@@ -4941,7 +4974,6 @@
     "operator/operator",
     "def/gtype",
     "signgroup",
-    // "char/text",
   ], function (require, exports, modules) {
     var kity = require("kity")
     var ZOOM = require("sysconf").zoom
@@ -4976,6 +5008,72 @@
           (maxWidth - downWidth) / 2 + overflow,
           upHeight + operatorShape.getHeight() + 1 * 2
         )
+        this.parentExpression.setOffset(
+          maxHeight - upHeight,
+          maxHeight - downHeight
+        )
+        this.parentExpression.expand(padding * 2, padding * 2)
+        this.parentExpression.translateElement(padding, padding)
+      },
+    })
+    // 中间的分隔符
+    function generateOperator(width, overflow) {
+      return new kity.Rect(width + overflow * 2, 1).fill("black")
+    }
+  })
+
+  // 新分数 用来显示箭头
+  define("operator/xleftarrow", [
+    "kity",
+    "sysconf",
+    "font/map/kf-ams-main",
+    "font/map/kf-ams-cal",
+    "font/map/kf-ams-frak",
+    "font/map/kf-ams-bb",
+    "font/map/kf-ams-roman",
+    "operator/operator",
+    "def/gtype",
+    "signgroup",
+    "char/text",
+  ], function (require, exports, modules) {
+    var kity = require("kity")
+    var ZOOM = require("sysconf").zoom
+    var Text = require("char/text")
+
+    return kity.createClass("FractionOperator", {
+      base: require("operator/operator"),
+      constructor: function () {
+        this.callBase("Fraction")
+      },
+      applyOperand: function (upOperand, downOperand) {
+        debugger
+        upOperand.scale(ZOOM)
+        downOperand.scale(ZOOM)
+
+        var upWidth = Math.ceil(upOperand.getWidth())
+        var downWidth = Math.ceil(downOperand.getWidth())
+        var upHeight = Math.ceil(upOperand.getHeight())
+        var downHeight = Math.ceil(downOperand.getHeight())
+
+        var overflow = 3
+        var padding = 1
+        var maxWidth = Math.max(upWidth, downWidth)
+        var maxHeight = Math.max(upHeight, downHeight)
+        // var operatorShape = generateOperator(maxWidth, overflow)
+        var operatorShape = new Text("←", "KF AMS MAIN").fill("black")
+
+        this.addOperatorShape(operatorShape)
+        // 上标偏移量
+        // upOperand.translate((maxWidth - upWidth) / 2 + overflow, 0)
+        upOperand.translate(maxWidth, operatorShape.getHeight() / 2)
+        operatorShape.translate(0, upHeight + 1)
+
+        // downOperand.translate(
+        //   (maxWidth - downWidth) / 2 + overflow,
+        //   upHeight + operatorShape.getHeight() + 1 * 2
+        // )
+
+        downOperand.translate(maxWidth, upHeight + operatorShape.getHeight())
         this.parentExpression.setOffset(
           maxHeight - upHeight,
           maxHeight - downHeight
@@ -5538,6 +5636,9 @@
 
         // Brackets expressoin
         BracketsExpression: require("expression/compound-exp/brackets"),
+
+        // TODO 新加的箭头表达式
+        XleftarrowExpression: require("expression/compound-exp/xleftarrow"),
       }
     })
 

@@ -28,7 +28,7 @@ define(function (require) {
       return obj && Object.prototype.toString.call(obj) === "[object Array]"
     },
 
-    // 获取定义
+    // 获取结构定义
     getDefine: function (str) {
       return Utils.extend({}, OPERATOR_LIST[str.replace("\\", "")])
     },
