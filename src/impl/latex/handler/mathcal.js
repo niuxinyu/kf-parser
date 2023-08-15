@@ -2,29 +2,25 @@
  * 手写体处理
  */
 
-define( function () {
+define(function () {
+  return function (info, processedStack, unprocessedStack) {
+    var chars = unprocessedStack.shift()
 
-    return function ( info, processedStack, unprocessedStack ) {
+    if (typeof chars === "object" && chars.name === "combination") {
+      chars = chars.operand.join("")
+    }
 
-        var chars = unprocessedStack.shift();
+    info.name = "text"
+    info.attr = {
+      _reverse: "mathcal",
+    }
+    info.callFn = {
+      setFamily: ["KF AMS CAL"],
+    }
+    info.operand = [chars]
 
-        if ( typeof chars === "object" && chars.name === "combination" ) {
-            chars = chars.operand.join( "" );
-        }
+    delete info.handler
 
-        info.name = "text";
-        info.attr = {
-            _reverse: "mathcal"
-        };
-        info.callFn = {
-            setFamily: [ "KF AMS CAL" ]
-        };
-        info.operand = [ chars ];
-
-        delete info.handler;
-
-        return info;
-
-    };
-
-} );
+    return info
+  }
+})

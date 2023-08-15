@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title></title>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <style type="text/css">
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-        .main {
-            width: 1000px;
-            height: 100%;
-            margin: 0 auto;
-        }
+      .main {
+        width: 1000px;
+        height: 100%;
+        margin: 0 auto;
+      }
 
-        #editor {
-            width: 100%;
-            height: 200px;
-        }
+      #editor {
+        width: 100%;
+        height: 200px;
+      }
 
-        .split {
-            padding: 50px 0;
-        }
+      .split {
+        padding: 50px 0;
+      }
 
-        #editor textarea {
-            width: 100%;
-            height: 100%;
-            resize: none;
-        }
+      #editor textarea {
+        width: 100%;
+        height: 100%;
+        resize: none;
+      }
     </style>
     <script src="dev-lib/jquery-1.10.2.min.js"></script>
     <script src="dev-lib/kitygraph.all.js"></script>
     <script src="dev-lib/kity-formula.all.js"></script>
+    <!-- <script src="dev-lib/kity-formula-render.all.js"></script> -->
 
     <!--<script src="dist/kityformula-parser.all.js"></script>-->
     <!--<script src="dev-lib/dev-define.js"></script>-->
@@ -54,111 +54,129 @@
 
     <script src="dev-lib/tex-svg.js"></script>
     <script>
+      // MathJax 后边看需不需要
+      // console.log(MathJax)
 
-        // MathJax 后边看需不需要
-        // console.log(MathJax)
+      window.onload = function () {
+        var Parser = kf.Parser
+        var Assembly = kf.Assembly
+        var latexParser = Parser.use("latex")
 
-        window.onload = function () {
+        // 这个暂时注释不要了
+        // var mathPar = Parser.use("mathjax");
 
-            var Parser = kf.Parser;
-            var Assembly = kf.Assembly;
-            var latexParser = Parser.use("latex");
+        kf.ResourceManager.ready(
+          function (Formula) {
+            var formula = new Formula(document.getElementById("container"), {
+              fontsize: 50,
+            })
 
-            // 这个暂时注释不要了
-            // var mathPar = Parser.use("mathjax");
+            var assembly = new Assembly(formula)
 
-            kf.ResourceManager.ready(function (Formula) {
+            document.getElementById("parseBtn").onclick = function () {
+              parse()
+            }
 
-                var formula = new Formula(document.getElementById("container"), {
-                    fontsize: 50
-                });
+            document.onkeydown = function (e) {
+              if (e.ctrlKey && e.keyCode === 83) {
+                e.preventDefault()
+                parse()
+              }
+            }
 
-                var assembly = new Assembly(formula);
+            function parse() {
+              // console.log('直接由字符渲染的svg', new kf.TextExpression('→'));
 
-                document.getElementById("parseBtn").onclick = function () {
-                    parse();
-                };
+              var value = document.getElementById("latexInput").value
 
-                document.onkeydown = function (e) {
-                    if (e.ctrlKey && e.keyCode === 83) {
-                        e.preventDefault();
-                        parse();
-                    }
-                };
+              // parser
+              var parseResult = latexParser.parse(value)
 
-                function parse() {
+              // console.log("parseResult", parseResult)
 
-                    // console.log('直接由字符渲染的svg', new kf.TextExpression('→'));
+              // 上标语法树
+              var temp = {
+                config: {},
+                tree: {
+                  name: "combination",
+                  operand: [
+                    {
+                      name: "superscript",
+                      // 这个作用不大
+                      type: 1,
+                      operand: [
+                        {
+                          name: "combination",
+                          operand: ["→"],
+                        },
+                        "20",
+                      ],
+                    },
+                  ],
+                },
+              }
 
-                    var value = document.getElementById("latexInput").value;
-
-                    // parser
-                    var parseResult = latexParser.parse(value);
-
-                    // console.log('parseResult', parseResult);
-
-                    assembly.regenerateBy(parseResult);
-                }
-            },
-                {
-                    path: "./resource/"
-                }
-            );
-
-        };
-
+              assembly.regenerateBy(parseResult)
+            }
+          },
+          {
+            path: "./resource/",
+          }
+        )
+      }
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="main">
-        <div id="editor">
-            <!-- <textarea id="latexInput">\int^{n}_{n=20}{n*3}</textarea> -->
-            <!-- <textarea id="latexInput">\lim_{x\to\infty}{a-b}</textarea> -->
-            <!-- <textarea id="latexInput">a+{b-c}</textarea> -->
+      <div id="editor">
+        <!-- <textarea id="latexInput">\int^{n}_{n=20}{n*3}</textarea> -->
+        <!-- <textarea id="latexInput">\lim_{x\to\infty}{a-b}</textarea> -->
+        <!-- <textarea id="latexInput">a+{b-c}</textarea> -->
 
-            <!-- 函数 极限 求和 -->
-            <!-- <textarea id="latexInput">\int{\sum ab} a</textarea> -->
+        <!-- 函数 -->
+        <!-- <textarea id="latexInput">\int{1}</textarea> -->
 
-            <!-- 平方公式 -->
-            <!-- <textarea id="latexInput">a^2+b^2=c^2</textarea> -->
+        <!-- 函数 极限 求和 -->
+        <!-- <textarea id="latexInput">\int{\sum ab} a</textarea> -->
 
-            <!-- 普通文本 -->
-            <!-- <textarea id="latexInput">a+b+c-d</textarea> -->
+        <!-- 平方公式 -->
+        <!-- <textarea id="latexInput">a^2+b^2=c^2</textarea> -->
 
-            <!-- 平方 -->
-            <!-- <textarea id="latexInput">a+b+{c+d}^2+acd</textarea> -->
+        <!-- 普通文本 -->
+        <!-- <textarea id="latexInput">a+b+c-d</textarea> -->
 
-            <!-- 根号 -->
-            <!-- <textarea id="latexInput">\sqrt[n]{ab}=\sqrt[n]{a}\cdot\sqrt[n]{b}</textarea> -->
+        <!-- 平方 -->
+        <!-- <textarea id="latexInput">a+b+{c+d}^2+acd</textarea> -->
 
-            <!-- 简单根号 -->
-            <!-- <textarea id="latexInput">\sqrt{2}</textarea> -->
+        <!-- 根号 -->
+        <!-- <textarea id="latexInput">\sqrt[n]{ab}=\sqrt[n]{a}\cdot\sqrt[n]{b}</textarea> -->
 
+        <!-- 简单根号 -->
+        <!-- <textarea id="latexInput">\sqrt{1}</textarea> -->
 
-            <!-- 中括号 小括号 -->
-            <!-- <textarea id="latexInput">\left [ (a+b-c) \right ]</textarea> -->
+        <!-- 中括号 小括号 -->
+        <!-- <textarea id="latexInput">\left [ (a+b-c) \right ]</textarea> -->
 
-            <!-- 极限 报错 -->
-            <!-- <textarea id="latexInput">e=\lim _{n\to \infty }\left(1+\frac{1233}{n}\right)</textarea> -->
+        <!-- 极限 报错 -->
+        <!-- <textarea id="latexInput">e=\lim _{n\to \infty }\left(1+\frac{1233}{n}\right)</textarea> -->
 
-            <!-- 大 A -->
-            <!-- <textarea id="latexInput">\mathcal{A}</textarea> -->
+        <!-- 大 A -->
+        <!-- <textarea id="latexInput">\mathcal{A}</textarea> -->
 
-            <!-- 分数 -->
-            <!-- <textarea id="latexInput">\frac{1}{2}</textarea> -->
+        <!-- 分数 -->
+        <textarea id="latexInput">\frac{1}{2}</textarea>
 
-            <!-- 左箭头 带数据 报错 内部没有支持 -->
-            <textarea id="latexInput">\xleftarrow[1]</textarea>
+        <!-- 左箭头 带数据 报错 内部没有支持 -->
+        <!-- <textarea id="latexInput">\xleftarrow[1]{1}</textarea> -->
 
-            <!-- sin -->
-            <!-- <textarea id="latexInput">\sin</textarea> -->
-        </div>
-        <div class="split">
-            <button id="parseBtn" type="button">转换</button>
-        </div>
-        <div id="container"></div>
+        <!-- sin -->
+        <!-- <textarea id="latexInput">\sin</textarea> -->
+      </div>
+      <div class="split">
+        <button id="parseBtn" type="button">转换</button>
+      </div>
+      <div id="container"></div>
     </div>
-</body>
-
+  </body>
 </html>

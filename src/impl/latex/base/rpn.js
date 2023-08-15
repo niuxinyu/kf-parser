@@ -13,8 +13,6 @@ define(function (require) {
         units = processFunction(units);
 
         while (currentUnit = units.shift()) {
-
-
             // 移除 brackets 中外层包裹的 combination 节点
             if (currentUnit.name === "combination" &&
                 currentUnit.operand.length === 1 &&
@@ -47,8 +45,8 @@ define(function (require) {
      */
     function processFunction(units) {
 
-        var processed = [],
-            currentUnit = null;
+        var processed = [];
+        var currentUnit = null;
 
         while ((currentUnit = units.pop()) !== undefined) {
 

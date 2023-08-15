@@ -857,7 +857,7 @@
         });
         return TranslateAnimator;
     });
-    
+
     define("core/browser", [], function () {
         var browser = function () {
             var agent = navigator.userAgent.toLowerCase(), opera = window.opera, browser;
@@ -900,6 +900,7 @@
         }();
         return browser;
     });
+    
     /**
      * @description 创建一个类
      * @param {String}    fullClassName  类全名，包括命名空间。
