@@ -5046,7 +5046,6 @@
         this.callBase("Fraction")
       },
       applyOperand: function (upOperand, downOperand) {
-        debugger
         upOperand.scale(ZOOM)
         downOperand.scale(ZOOM)
 
